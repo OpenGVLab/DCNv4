@@ -1,0 +1,20 @@
+DATA:
+  IMG_ON_MEMORY: False
+MODEL:
+  TYPE: flash_intern_image
+  DROP_PATH_RATE: 0.4
+  FLASH_INTERN_IMAGE:
+    CORE_OP: 'DCNv4'
+    DEPTHS: [4, 4, 21, 4]
+    GROUPS: [5, 10, 20, 40]
+    CHANNELS: 80
+    LAYER_SCALE: 1e-5
+    OFFSET_SCALE: 1.0
+    MLP_RATIO: 4.0
+    POST_NORM: True
+    DW_KERNEL_SIZE: 3
+TRAIN:
+  EMA:
+    ENABLE: True
+    DECAY: 0.9999
+  BASE_LR: 5e-4
