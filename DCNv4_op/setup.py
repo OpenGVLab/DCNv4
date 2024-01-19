@@ -62,7 +62,7 @@ def get_extensions():
 
 setup(
     name="DCNv4",
-    version="1.0.0",
+    version="1.0.0.post2",
     author="Yuwen Xiong, Feng Wang",
     url="",
     description="PyTorch Wrapper for CUDA Functions of DCNv4",

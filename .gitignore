@@ -11,6 +11,7 @@ detection/work_dirs
 ops_dcnv3/build
 ops_dcnv3/dist
 ops_dcnv3/DCNv3.egg-info
+DCNv4_op/DCNv4.egg-info
 build/
 dist/
 ckpts/

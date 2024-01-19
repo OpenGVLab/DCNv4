@@ -91,17 +91,17 @@ at::Tensor dcnv4_cuda_forward(
 
 std::vector<at::Tensor>
 dcnv4_cuda_backward(
-    const at::Tensor &value, 
-    const at::Tensor &p_offset, 
+    const at::Tensor &value,
+    const at::Tensor &p_offset,
     const int kernel_h, const int kernel_w, const int stride_h,
     const int stride_w, const int pad_h, const int pad_w, const int dilation_h,
     const int dilation_w, const int group, const int group_channels,
-    const float offset_scale, const int im2col_step, const at::Tensor &grad_output, 
+    const float offset_scale, const int im2col_step, const at::Tensor &grad_output,
     const int remove_center, const int d_stride, const int block_thread,
     const bool softmax) {
   AT_ASSERTM(value.is_contiguous(), "input tensor has to be contiguous");
   AT_ASSERTM(p_offset.is_contiguous(), "offset tensor has to be contiguous");
-  AT_ASSERTM(grad_output.is_contiguous(), 
+  AT_ASSERTM(grad_output.is_contiguous(),
              "grad_output tensor has to be contiguous");
 
   AT_ASSERTM(value.type().is_cuda(), "input must be a CUDA tensor");
@@ -129,7 +129,7 @@ dcnv4_cuda_backward(
       channels == (group * group_channels),
       "Input channels and group times group channels wont match: (%d vs %d).",
       channels, group * group_channels);
-  
+
   auto dtype = value.dtype();
   if (dtype == at::kHalf){
     dtype = at::kFloat;
@@ -146,7 +146,8 @@ dcnv4_cuda_backward(
 
   for (int n = 0; n < batch / im2col_step_; ++n) {
     auto columns = grad_output_n.select(0, n);
-    AT_DISPATCH_FLOATING_TYPES_AND_HALF(value.type(),
+    AT_DISPATCH_FLOATING_TYPES_AND2(
+        at::ScalarType::Half, at::ScalarType::BFloat16, value.scalar_type(),
         "dcnv4_backward_cuda", ([&] {
           dcnv4_col2im_cuda(
               at::cuda::getCurrentCUDAStream(),

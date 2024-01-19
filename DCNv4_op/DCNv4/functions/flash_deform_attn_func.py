@@ -57,7 +57,7 @@ def findspec_bwd(B, Q, G, C):
         d_stride = 2
     else:
         d_stride = 1
-    
+
     ms = factors(B*Q)
     multiplier = 1
     for m in ms:
@@ -70,7 +70,7 @@ class FlashDeformAttnFunction(Function):
     @staticmethod
     @torch.autocast("cuda", enabled=True, dtype=torch.float16)
     def forward(
-        ctx, value, value_spatial_shapes, value_level_start_index, 
+        ctx, value, value_spatial_shapes, value_level_start_index,
         sampling_loc_attn, im2col_step, K=8
     ):
 

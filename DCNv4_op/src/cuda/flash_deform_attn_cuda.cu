@@ -26,7 +26,7 @@
 at::Tensor flash_deform_attn_cuda_forward(
     const at::Tensor &value, const at::Tensor &spatial_shapes,
     const at::Tensor &level_start_index, const at::Tensor &sampling_loc_attn,
-    const int im2col_step = 64, const int K=8, const int d_stride=8, 
+    const int im2col_step = 64, const int K=8, const int d_stride=8,
     const int block_thread=0) {
   AT_ASSERTM(value.is_contiguous(), "value tensor has to be contiguous");
   AT_ASSERTM(spatial_shapes.is_contiguous(),
@@ -135,7 +135,8 @@ flash_deform_attn_cuda_backward(
   auto per_out_size = num_query * num_heads * num_channels;
 
   for (int n = 0; n < batch / im2col_step_; ++n) {
-    AT_DISPATCH_FLOATING_TYPES_AND_HALF(value.type(),
+    AT_DISPATCH_FLOATING_TYPES_AND2(
+        at::ScalarType::Half, at::ScalarType::BFloat16, value.scalar_type(),
         "flash_deform_attn_backward_cuda", ([&] {
           flash_deformable_col2im_cuda(
               at::cuda::getCurrentCUDAStream(),
@@ -145,7 +146,7 @@ flash_deform_attn_cuda_backward(
                   n * im2col_step_ * per_offset_size,
               grad_output.data_ptr<scalar_t>() + n * im2col_step_ * per_out_size,
               im2col_step_, spatial_size, num_heads, num_channels, num_levels,
-              num_query, num_point, 
+              num_query, num_point,
               grad_input.data<opmath_t>() + n * im2col_step_ * per_value_size,
               grad_offset.data<opmath_t>() + n * im2col_step_ * per_offset_size,
               d_stride, block_thread
