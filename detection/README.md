@@ -48,7 +48,7 @@ pip install opencv-python termcolor yacs pyyaml scipy
 
 - Install DCNv4
 ```bash
-pip install DCNv4==latest
+pip install DCNv4
 ```
 
 
