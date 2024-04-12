@@ -18,6 +18,10 @@
 #include <cuda_fp16.h>
 #include <cuda_runtime.h>
 
+#ifdef _WIN32
+#define uint unsigned int
+#endif
+
 constexpr int kWarpSize = 32;
 #define opmath_t at::opmath_type<scalar_t>
 
