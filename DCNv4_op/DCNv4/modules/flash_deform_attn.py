@@ -128,13 +128,17 @@ class FlashDeformAttn(nn.Module):
             raise ValueError(
                 "Last dim of reference_points must be 2 or 4, but get {} instead.".format(reference_points.shape[-1])
             )
+            
+        # Cat sampling_offsets and attention_weights, generate sampling_loc_attn:
+        sampling_locations = sampling_locations.flatten(-3).half()
+        attention_weights = attention_weights.flatten(-2)
+        sampling_loc_attn = torch.cat([sampling_locations, attention_weights], dim=-1)
 
         output = FlashDeformAttnFunction.apply(
             value,
             input_spatial_shapes,
             input_level_start_index,
-            sampling_locations,
-            attention_weights,
+            sampling_loc_attn,
             self.im2col_step,
             self.n_points           
         )
