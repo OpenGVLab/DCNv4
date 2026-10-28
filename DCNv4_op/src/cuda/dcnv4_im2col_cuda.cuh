@@ -28,8 +28,8 @@ __global__ void forward_kernel_dcn(
     const int width_out, const opmath_t offset_scale, const int remove_center,
     const int block_multiplier, const int padded_offset_dim) {
 
-  const int &qi = (blockIdx.x * block_multiplier % Q) + threadIdx.z;
-  const int &bi = blockIdx.x * block_multiplier / Q;
+  const int &qi = ((blockIdx.x * block_multiplier + threadIdx.z) % Q);
+  const int &bi = (blockIdx.x * block_multiplier + threadIdx.z) / Q;
 
   const int &di_s = threadIdx.x * d_stride;
   const int &gi = threadIdx.y;
@@ -150,8 +150,8 @@ __global__ void forward_kernel_dcn_reg(
     const int width_out, const opmath_t offset_scale, const int remove_center,
     const int block_multiplier, const int padded_offset_dim) {
 
-  const int &qi = (blockIdx.x * block_multiplier % Q) + threadIdx.z;
-  const int &bi = blockIdx.x * block_multiplier / Q;
+  const int &qi = ((blockIdx.x * block_multiplier + threadIdx.z) % Q);
+  const int &bi = (blockIdx.x * block_multiplier + threadIdx.z) / Q;
 
   const int &di_s = threadIdx.x * d_stride;
   const int &gi = threadIdx.y;

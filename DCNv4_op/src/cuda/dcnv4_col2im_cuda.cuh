@@ -31,8 +31,8 @@ __global__ void backward_kernel_dcn(
 
   extern __shared__ char _s[];
 
-  const int &qi = (blockIdx.x * block_multiplier % Q) + threadIdx.z;
-  const int &bi = blockIdx.x * block_multiplier / Q;
+  const int &qi = ((blockIdx.x * block_multiplier + threadIdx.z) % Q);
+  const int &bi = (blockIdx.x * block_multiplier + threadIdx.z) / Q;
 
   const int &di_s = threadIdx.x * d_stride;
   const int &gi = threadIdx.y;
@@ -64,9 +64,9 @@ __global__ void backward_kernel_dcn(
     *(p_mask_shm + num_thread * num_iter + threadIdx.x) = *(
         scalar_t *)(p_offset_ptr + K * 2 + num_thread * num_iter + threadIdx.x);
   }
-
+  __syncthreads();
   if (softmax) {
-    __syncthreads();
+
     // transfer offset from global memory to shared memory >
 
     // Calculate softmax over L and K
@@ -207,8 +207,8 @@ __global__ void backward_kernel_dcn_warp_primitive(
 
   extern __shared__ char _s[];
 
-  const int &qi = (blockIdx.x * block_multiplier % Q) + threadIdx.z;
-  const int &bi = blockIdx.x * block_multiplier / Q;
+  const int &qi = ((blockIdx.x * block_multiplier + threadIdx.z) % Q);
+  const int &bi = (blockIdx.x * block_multiplier + threadIdx.z) / Q;
 
 
   const int &di_s = threadIdx.x * d_stride;
@@ -246,9 +246,9 @@ __global__ void backward_kernel_dcn_warp_primitive(
     *(p_mask_shm + num_thread * num_iter + threadIdx.x) = *(
         scalar_t *)(p_offset_ptr + K * 2 + num_thread * num_iter + threadIdx.x);
   }
-
+  __syncthreads();
   if (softmax) {
-    __syncthreads();
+
     // transfer offset from global memory to shared memory >
 
     // Calculate softmax over L and K
