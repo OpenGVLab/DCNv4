@@ -19,10 +19,17 @@ from .table import TABLE, BWDTABLE
 from DCNv4 import ext
 
 def factors(N):
+    # divisors are symmetric around sqrt(N): scanning up to N makes this
+    # O(B*H*W) in python, which dominates small-to-medium feature maps
     res = []
-    for i in range(1, N+1):
+    i = 1
+    while i * i <= N:
         if N % i == 0:
             res.append(i)
+            if i != N // i:
+                res.append(N // i)
+        i += 1
+    res.sort()
     return res
 
 def findspec(B, H, W, G, C):
@@ -57,6 +64,7 @@ def find_spec_bwd(B, H, W, G, C):
         if m <= 64 and (m * G * C // d_stride) <= 256:
             multiplier = m
     n_thread = multiplier * G * C // d_stride
+    BWDTABLE[key] = (d_stride, n_thread)
     return d_stride, n_thread
 
 class DCNv4Function(Function):
